@@ -1,0 +1,24 @@
+﻿using ECommerce.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace ECommerce.Infrastructure.Data
+{
+    public class ECommerceDbContext : DbContext
+    {
+        public ECommerceDbContext(DbContextOptions<ECommerceDbContext> options) : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ECommerceDbContext).Assembly);
+        }
+
+
+        public DbSet<ProductEntity> Products => Set<ProductEntity>();
+        public DbSet<ProductBrandEntity> ProductBrands => Set<ProductBrandEntity>();
+        public DbSet<ProductTypeEntity> ProductTypes => Set<ProductTypeEntity>();
+    }
+}
