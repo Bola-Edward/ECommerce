@@ -1,4 +1,5 @@
 ﻿using ECommerce.Infrastructure.Data;
+using ECommerce.Infrastructure.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,9 @@ namespace ECommerce.Infrastructure
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
                 .EnableSensitiveDataLogging()
             );
+
+            services.AddScoped<IDataSeeder, ProductBrandSeeder>();
+            services.AddScoped<IDataSeeder, ProductTypeSeeder>();
             return services;
         }
     }
