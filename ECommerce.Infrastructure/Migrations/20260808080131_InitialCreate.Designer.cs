@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Infrastructure.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    [Migration("20260718093201_InitialCreate")]
+    [Migration("20260808080131_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,6 +33,9 @@ namespace ECommerce.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -56,9 +59,6 @@ namespace ECommerce.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BrandId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -66,6 +66,9 @@ namespace ECommerce.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -81,6 +84,9 @@ namespace ECommerce.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("ProductBrandId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("ProductTypeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -89,11 +95,11 @@ namespace ECommerce.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("Price");
+
+                    b.HasIndex("ProductBrandId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -108,6 +114,9 @@ namespace ECommerce.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -127,9 +136,9 @@ namespace ECommerce.Infrastructure.Migrations
 
             modelBuilder.Entity("ECommerce.Domain.Entities.ProductEntity", b =>
                 {
-                    b.HasOne("ECommerce.Domain.Entities.ProductBrandEntity", "Brand")
+                    b.HasOne("ECommerce.Domain.Entities.ProductBrandEntity", "ProductBrand")
                         .WithMany("Products")
-                        .HasForeignKey("BrandId")
+                        .HasForeignKey("ProductBrandId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -139,7 +148,7 @@ namespace ECommerce.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Brand");
+                    b.Navigation("ProductBrand");
 
                     b.Navigation("ProductType");
                 });
