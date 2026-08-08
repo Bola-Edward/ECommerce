@@ -35,9 +35,9 @@ namespace ECommerce.Infrastructure.Data.Configurations
             //Relationships
 
 
-            builder.HasOne(p => p.Brand)
+            builder.HasOne(p => p.ProductBrand)
                 .WithMany(b => b.Products)
-                .HasForeignKey(p => p.BrandId)
+                .HasForeignKey(p => p.ProductBrandId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 
