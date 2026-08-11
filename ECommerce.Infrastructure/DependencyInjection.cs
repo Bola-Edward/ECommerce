@@ -18,6 +18,9 @@ namespace ECommerce.Infrastructure
 
             services.AddScoped<IDataSeeder, ProductBrandSeeder>();
             services.AddScoped<IDataSeeder, ProductTypeSeeder>();
+
+            services.AddScoped<DatabaseSeeder>();
+
             return services;
         }
     }
