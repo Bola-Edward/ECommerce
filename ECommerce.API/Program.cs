@@ -25,6 +25,7 @@ if (app.Environment.IsDevelopment())
     await dbSeed.SeedAll();
 }
 
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 
