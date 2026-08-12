@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ECommerce.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,79 +27,133 @@ namespace ECommerce.Domain.Entities
 
         private ProductEntity() { }
 
-        private ProductEntity(string name, string description, string pictureUrl, decimal price, Guid productBrandId, Guid productTypeId)
+        public static Result<ProductEntity> Create(
+        string name,
+        string description,
+        string pictureUrl,
+        decimal price,
+        Guid productBrandId,
+        Guid productTypeId)
         {
-            Id = Guid.NewGuid();
-            CreatedAt = DateTimeOffset.UtcNow;
+            var product = new ProductEntity();
 
-            SetName(name);
-            SetDescription(description);
-            SetPictureUrl(pictureUrl);
-            SetPrice(price);
-            SetBrand(productBrandId);
-            SetType(productTypeId);
+            var nameResult = product.SetName(name);
+            if (nameResult.IsFailure)
+                return Result<ProductEntity>.Failure(nameResult.Error!);
+
+            var descriptionResult = product.SetDescription(description);
+            if (descriptionResult.IsFailure)
+                return Result<ProductEntity>.Failure(descriptionResult.Error!);
+
+            var pictureUrlResult = product.SetPictureUrl(pictureUrl);
+            if (pictureUrlResult.IsFailure)
+                return Result<ProductEntity>.Failure(pictureUrlResult.Error!);
+
+            var priceResult = product.SetPrice(price);
+            if (priceResult.IsFailure)
+                return Result<ProductEntity>.Failure(priceResult.Error!);
+
+            var brandResult = product.SetBrand(productBrandId);
+            if (brandResult.IsFailure)
+                return Result<ProductEntity>.Failure(brandResult.Error!);
+
+            var typeResult = product.SetType(productTypeId);
+            if (typeResult.IsFailure)
+                return Result<ProductEntity>.Failure(typeResult.Error!);
+
+            product.Id = Guid.NewGuid();
+            product.CreatedAt = DateTimeOffset.UtcNow;
+
+            return Result<ProductEntity>.Success(product);
         }
 
-        public static ProductEntity Create(string name, string description, string pictureUrl, decimal price, Guid productBrandId, Guid productTypeId)
+        public Result Update(
+            string name,
+            string description,
+            string pictureUrl,
+            decimal price,
+            Guid productBrandId,
+            Guid productTypeId)
         {
-            return new ProductEntity(name, description, pictureUrl, price, productBrandId, productTypeId);
+            var nameResult = SetName(name);
+            if (nameResult.IsFailure)
+                return nameResult;
+
+            var descriptionResult = SetDescription(description);
+            if (descriptionResult.IsFailure)
+                return descriptionResult;
+
+            var pictureUrlResult = SetPictureUrl(pictureUrl);
+            if (pictureUrlResult.IsFailure)
+                return pictureUrlResult;
+
+            var priceResult = SetPrice(price);
+            if (priceResult.IsFailure)
+                return priceResult;
+
+            var brandResult = SetBrand(productBrandId);
+            if (brandResult.IsFailure)
+                return brandResult;
+
+            var typeResult = SetType(productTypeId);
+            if (typeResult.IsFailure)
+                return typeResult;
+
+            return Result.Success();
         }
 
-        private void SetName(string name)
+        private Result SetName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidOperationException("Product name is required.");
-
-            if (name.Length > MaxNameLength)
-                throw new InvalidOperationException($"Product name cannot exceed {MaxNameLength} characters.");
+                return Result.Failure(ProductErrors.NameRequired);
 
             Name = name.Trim();
+            return Result.Success();
         }
 
-        private void SetDescription(string description)
+        private Result SetDescription(string description)
         {
             if (string.IsNullOrWhiteSpace(description))
-                throw new InvalidOperationException("Product description is required.");
-
-            if (description.Length > MaxDescriptionLength)
-                throw new InvalidOperationException($"Product description cannot exceed {MaxDescriptionLength} characters.");
+                return Result.Failure(ProductErrors.DescriptionRequired);
 
             Description = description.Trim();
+            return Result.Success();
         }
 
-        private void SetPictureUrl(string pictureUrl)
+        private Result SetPictureUrl(string pictureUrl)
         {
             if (string.IsNullOrWhiteSpace(pictureUrl))
-                throw new InvalidOperationException("Product picture URL is required.");
-
-            if (pictureUrl.Length > MaxPictureUrlLength)
-                throw new InvalidOperationException($"Product picture URL cannot exceed {MaxPictureUrlLength} characters.");
+                return Result.Failure(ProductErrors.PictureUrlRequired);
 
             PictureUrl = pictureUrl.Trim();
+            return Result.Success();
         }
 
-        private void SetPrice(decimal price)
+        private Result SetPrice(decimal price)
         {
-            if (price < 0)
-                throw new InvalidOperationException("Product price cannot be negative.");
+            if (price <= 0)
+                return Result.Failure(ProductErrors.InvalidPrice);
 
             Price = price;
+            return Result.Success();
         }
 
-        private void SetBrand(Guid productBrandId)
+        private Result SetBrand(Guid productBrandId)
         {
             if (productBrandId == Guid.Empty)
-                throw new InvalidOperationException("Product brand is required.");
+                return Result.Failure(ProductErrors.ProductBrandRequired);
 
             ProductBrandId = productBrandId;
+            return Result.Success();
         }
 
-        private void SetType(Guid productTypeId)
+        private Result SetType(Guid productTypeId)
         {
             if (productTypeId == Guid.Empty)
-                throw new InvalidOperationException("Product type is required.");
+                return Result.Failure(ProductErrors.ProductTypeRequired);
 
             ProductTypeId = productTypeId;
+            return Result.Success();
         }
     }
 }
