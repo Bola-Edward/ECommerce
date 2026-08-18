@@ -16,5 +16,15 @@ namespace ECommerce.Domain.Entities
             IsDeleted = true;
             UpdatedAt = DateTimeOffset.UtcNow;
         }
+
+        public void MarkAsUpdated()
+        {
+            UpdatedAt = DateTimeOffset.UtcNow;
+        }
+
+        public void MarkAsCreated()
+        {
+            CreatedAt = DateTimeOffset.UtcNow;
+        }
     }
 }
