@@ -1,5 +1,10 @@
 ﻿using ECommerce.Infrastructure.Data;
+using ECommerce.Infrastructure.Data.Interceptors;
+using ECommerce.Infrastructure.Queries;
 using ECommerce.Infrastructure.Seeding;
+using ECommerce.UseCases.Brands;
+using ECommerce.UseCases.Products;
+using ECommerce.UseCases.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +23,12 @@ namespace ECommerce.Infrastructure
 
             services.AddScoped<IDataSeeder, ProductBrandSeeder>();
             services.AddScoped<IDataSeeder, ProductTypeSeeder>();
+            services.AddScoped<IAuditInterceptor, AuditInterceptor>();
+            services.AddScoped<ISoftDeleteInterceptor, SoftDeleteInterceptor>();
+
+            services.AddScoped<IProductQueryService, ProductQueryService>();
+            services.AddScoped<IProductBrandQueryService, ProductBrandQueryService>();
+            services.AddScoped<IProductTypeQueryService, ProductTypeQueryService>();
 
             services.AddScoped<DatabaseSeeder>();
 
