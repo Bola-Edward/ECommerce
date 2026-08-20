@@ -16,6 +16,14 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger(); // run middleware to generate open api file
+    app.UseSwaggerUI(); // use swagger ui to view open api file
+}
+
+
+if (app.Environment.IsDevelopment())
+{
+
     var scope = app.Services.CreateAsyncScope();
 
     var dbSeed = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
@@ -30,6 +38,8 @@ app.UseExceptionHandler();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
 

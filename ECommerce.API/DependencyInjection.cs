@@ -11,6 +11,9 @@ namespace ECommerce.API
             services.AddProblemDetails();
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
+            services.AddSwaggerGen(); // generate open api file
+
+
             return services;
         }
     }
