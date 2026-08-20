@@ -15,7 +15,7 @@ namespace ECommerce.UseCases.Products.Queries
             _productQueryService = productQueryService;
         }
 
-        public async Task<Result<IReadOnlyList<GetAllProductsResponse>>> ExecuteAsync()
+        public async Task<Result<IReadOnlyList<GetAllProductsResponse>>> ExecuteAsync(CancellationToken ct)
         {
             var products = await _productQueryService.GetAllProductsAsync();
             return Result<IReadOnlyList<GetAllProductsResponse>>.Success(products);

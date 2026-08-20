@@ -1,4 +1,5 @@
 ﻿
+using ECommerce.API.Models;
 using ECommerce.UseCases.Types.Dtos;
 using ECommerce.UseCases.Types.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,11 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(GetAllTypesResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<GetAllTypesResponse>>> GetAll(CancellationToken ct = default)
+        [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllTypesResponse>>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllTypesResponse>>>> GetAll(CancellationToken ct = default)
         {
             var result = await _getAllTypesQuery.ExecuteAsync(ct);
-            return Ok(result.Value);
+            return HandleResult(result);
         }
     }
 }

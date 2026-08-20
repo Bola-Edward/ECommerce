@@ -1,4 +1,5 @@
 ﻿
+using ECommerce.API.Models;
 using ECommerce.UseCases.Products.Dtos;
 using ECommerce.UseCases.Products.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -18,28 +19,21 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpGet] // api/products
-        [ProducesResponseType(typeof(GetAllProductsResponse), StatusCodes.Status200OK)]
-        public async Task<ActionResult<IReadOnlyList<GetAllProductsResponse>>> GetAll(CancellationToken ct = default)
+        [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllProductsResponse>>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllProductsResponse>>>> GetAll(CancellationToken ct = default)
         {
             var result = await _getAllProductsQuery.ExecuteAsync(ct);
-            return Ok(result.Value);
+            return HandleResult(result);
         }
 
 
         [HttpGet("{id:guid}")] // api /products/{id}
-        [ProducesResponseType(typeof(GetProductByIdResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GetProductByIdResponse>> GetById(Guid id, CancellationToken ct = default)
+        [ProducesResponseType(typeof(ApiResponse<GetProductByIdResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<GetProductByIdResponse>), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ApiResponse<GetProductByIdResponse>>> GetById(Guid id, CancellationToken ct = default)
         {
             var result = await _getProductByIdQuery.ExecuteAsync(id, ct);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-            else
-            {
-                return NotFound(result.Error);
-            }
+            return HandleResult(result);
         }
     }
 }
