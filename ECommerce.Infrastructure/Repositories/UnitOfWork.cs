@@ -14,31 +14,35 @@ namespace ECommerce.Infrastructure.Repositories
         private readonly IAuditInterceptor _auditInterceptor;
         private readonly ISoftDeleteInterceptor _softDeleteInterceptor;
 
-        public UnitOfWork(ECommerceDbContext dbContext, IAuditInterceptor auditInterceptor, ISoftDeleteInterceptor softDeleteInterceptor)
+
+        public IRepository<ProductEntity> Products { get; }
+        public IRepository<ProductBrandEntity> Brands { get; }
+        public IRepository<ProductTypeEntity> Types { get; }
+
+        public UnitOfWork(ECommerceDbContext dbContext, IAuditInterceptor auditInterceptor, ISoftDeleteInterceptor softDeleteInterceptor, IRepository<ProductEntity> products, IRepository<ProductBrandEntity> brands, IRepository<ProductTypeEntity> types)
         {
             _dbContext = dbContext;
             _auditInterceptor = auditInterceptor;
             _softDeleteInterceptor = softDeleteInterceptor;
+
+            Products = products;
+            Brands = brands;
+            Types = types;
         }
 
-        public IRepository<T> Repository<T>() where T : BaseEntity
-        {
-            var type = typeof(T);
-            if (_repositories.TryGetValue(type, out var repository))
-            {
-                return (IRepository<T>)repository;
-            }
 
-            var newRepository = new Repository<T>(_dbContext);
-            _repositories.TryAdd(type, newRepository);
-            return newRepository;
-        }
 
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
         {
             _auditInterceptor.Apply(_dbContext);
             _softDeleteInterceptor.Apply(_dbContext);
             return _dbContext.SaveChangesAsync(ct);
+        }
+
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
         }
     }
 }
