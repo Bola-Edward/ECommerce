@@ -10,7 +10,6 @@ namespace ECommerce.Infrastructure.Repositories
     {
 
         private readonly ECommerceDbContext _dbContext;
-        private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
         private readonly IAuditInterceptor _auditInterceptor;
         private readonly ISoftDeleteInterceptor _softDeleteInterceptor;
 

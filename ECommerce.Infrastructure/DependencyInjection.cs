@@ -28,9 +28,6 @@ namespace ECommerce.Infrastructure
             services.AddScoped<IAuditInterceptor, AuditInterceptor>();
             services.AddScoped<ISoftDeleteInterceptor, SoftDeleteInterceptor>();
 
-            services.AddScoped<IProductQueryService, ProductQueryService>();
-            services.AddScoped<IProductBrandQueryService, ProductBrandQueryService>();
-            services.AddScoped<IProductTypeQueryService, ProductTypeQueryService>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
