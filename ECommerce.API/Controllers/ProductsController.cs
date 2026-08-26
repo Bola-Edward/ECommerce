@@ -1,5 +1,6 @@
 ﻿
 using ECommerce.API.Models;
+using ECommerce.UseCases.Messaging.Apstractions;
 using ECommerce.UseCases.Products.Dtos;
 using ECommerce.UseCases.Products.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -10,19 +11,17 @@ namespace ECommerce.API.Controllers
 
     public class ProductsController : ApiControllerBase
     {
-        private readonly GetAllProductsQuery _getAllProductsQuery;
-        private readonly GetProductByIdQuery _getProductByIdQuery;
-        public ProductsController(GetAllProductsQuery getAllProductsQuery, GetProductByIdQuery getProductByIdQuery)
+        private readonly ISender _sender;
+        public ProductsController(ISender sender)
         {
-            _getAllProductsQuery = getAllProductsQuery;
-            _getProductByIdQuery = getProductByIdQuery;
+            _sender = sender;
         }
 
         [HttpGet] // api/products
         [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllProductsResponse>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllProductsResponse>>>> GetAll(CancellationToken ct = default)
         {
-            var result = await _getAllProductsQuery.ExecuteAsync(ct);
+            var result = await _sender.Send(new GetAllProductsQuery(), ct);
             return HandleResult(result);
         }
 
@@ -32,7 +31,7 @@ namespace ECommerce.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<GetProductByIdResponse>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponse<GetProductByIdResponse>>> GetById(Guid id, CancellationToken ct = default)
         {
-            var result = await _getProductByIdQuery.ExecuteAsync(id, ct);
+            var result = await _sender.Send(new GetProductByIdQuery(id), ct);
             return HandleResult(result);
         }
     }

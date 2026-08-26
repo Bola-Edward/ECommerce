@@ -1,10 +1,12 @@
 ﻿using ECommerce.UseCases.Brands.Queries;
 using ECommerce.UseCases.Mapping;
+using ECommerce.UseCases.Messaging;
 using ECommerce.UseCases.Products.Queries;
 using ECommerce.UseCases.Types.Queries;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ECommerce.UseCases
 {
@@ -20,10 +22,13 @@ namespace ECommerce.UseCases
             services.AddSingleton(config);
             services.AddScoped<IMapper, ServiceMapper>();
 
+
             services.AddScoped<GetAllProductsQuery>();
             services.AddScoped<GetProductByIdQuery>();
             services.AddScoped<GetAllBrandsQuery>();
             services.AddScoped<GetAllTypesQuery>();
+            services.AddMessaging(Assembly.GetExecutingAssembly());
+
 
             return services;
         }

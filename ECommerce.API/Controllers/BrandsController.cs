@@ -2,24 +2,25 @@
 using ECommerce.API.Models;
 using ECommerce.UseCases.Brands.Dtos;
 using ECommerce.UseCases.Brands.Queries;
+using ECommerce.UseCases.Messaging.Apstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers
 {
     public class BrandsController : ApiControllerBase
     {
-        private readonly GetAllBrandsQuery _getAllBrandsQuery;
+        private readonly ISender _sender;
 
-        public BrandsController(GetAllBrandsQuery getAllBrandsQuery)
+        public BrandsController(ISender sender)
         {
-            _getAllBrandsQuery = getAllBrandsQuery;
+            _sender = sender;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllBrandsResponse>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllBrandsResponse>>>> GetAll(CancellationToken ct = default)
         {
-            var result = await _getAllBrandsQuery.ExecuteAsync(ct);
+            var result = await _sender.Send(new GetAllBrandsQuery(), ct);
             return HandleResult(result);
         }
     }
