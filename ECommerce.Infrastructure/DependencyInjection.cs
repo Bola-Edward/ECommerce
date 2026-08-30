@@ -1,7 +1,6 @@
 ﻿using ECommerce.Domain.Repositories;
 using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Data.Interceptors;
-using ECommerce.Infrastructure.Queries;
 using ECommerce.Infrastructure.Repositories;
 using ECommerce.Infrastructure.Seeding;
 using ECommerce.UseCases.Brands;

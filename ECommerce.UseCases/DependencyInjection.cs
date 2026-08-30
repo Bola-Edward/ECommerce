@@ -2,7 +2,9 @@
 using ECommerce.UseCases.Mapping;
 using ECommerce.UseCases.Messaging;
 using ECommerce.UseCases.Products.Queries;
+using ECommerce.UseCases.Products.Queries.Validators;
 using ECommerce.UseCases.Types.Queries;
+using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,12 +25,9 @@ namespace ECommerce.UseCases
             services.AddScoped<IMapper, ServiceMapper>();
 
 
-            services.AddScoped<GetAllProductsQuery>();
-            services.AddScoped<GetProductByIdQuery>();
-            services.AddScoped<GetAllBrandsQuery>();
-            services.AddScoped<GetAllTypesQuery>();
-            services.AddMessaging(Assembly.GetExecutingAssembly());
 
+            services.AddMessaging(Assembly.GetExecutingAssembly());
+            services.AddValidatorsFromAssembly(typeof(GetPagedProductQueryValidator).Assembly);
 
             return services;
         }

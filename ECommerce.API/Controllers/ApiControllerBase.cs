@@ -1,5 +1,6 @@
 ﻿using ECommerce.API.Models;
 using ECommerce.Domain.Common;
+using ECommerce.Domain.IRepositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.API.Controllers
@@ -12,33 +13,73 @@ namespace ECommerce.API.Controllers
     [Route("api/[controller]")]
     public class ApiControllerBase : ControllerBase
     {
-        protected ActionResult<ApiResponse<T>> HandleResult<T>(Result<T> result)
+        protected ActionResult<ApiResponse<T>> HandleResult<T>(
+            Result<T> result)
         {
             if (result.IsSuccess)
             {
-                return Ok(ApiResponse<T>.Success(result.Value));
+                return Ok(
+                    ApiResponse<T>.Success(result.Value));
             }
 
-            if (result.Error.Code.Contains("NotFound", StringComparison.OrdinalIgnoreCase))
+            return Problem(result);
+        }
+
+
+        protected ActionResult<ApiResponse<IReadOnlyList<T>>> FromPagedResult<T>(
+            Result<PagedResult<T>> result,
+            int pageNumber,
+            int pageSize,
+            string successMessage)
+        {
+            if (result.IsFailure)
+                return Problem(result);
+
+            var pagination = new PaginationMeta(
+                pageNumber,
+                pageSize,
+                result.Value.TotalCount);
+
+            var response = ApiResponse<IReadOnlyList<T>>.Success(
+                result.Value.Items,
+                message: successMessage,
+                pagination: pagination);
+
+            return Ok(response);
+        }
+
+
+        protected ActionResult Problem(Result result)
+        {
+            var statusCode = result.Error.Type switch
             {
-                var notFoundResponse = ApiResponse<T>.Failure(
-                    statusCode: StatusCodes.Status404NotFound,
-                    message: result.Error.Message ?? "Resource not found",
-                    errors: [result.Error.Code]
-                );
+                ErrorType.Validation =>
+                    StatusCodes.Status400BadRequest,
 
-                return NotFound(notFoundResponse);
-            }
-            else
-            {
-                var badRequestResponse = ApiResponse<T>.Failure(
-                    statusCode: StatusCodes.Status400BadRequest,
-                    message: result.Error.Message ?? "Bad request",
-                    errors: [result.Error.Code]
-                );
+                ErrorType.NotFound =>
+                    StatusCodes.Status404NotFound,
 
-                return BadRequest(badRequestResponse);
-            }
+                ErrorType.UnAuthorized =>
+                    StatusCodes.Status401Unauthorized,
+
+                ErrorType.Forbidden =>
+                    StatusCodes.Status403Forbidden,
+
+                ErrorType.Conflict =>
+                    StatusCodes.Status409Conflict,
+
+                _ =>
+                    StatusCodes.Status500InternalServerError
+            };
+
+            var response = ApiResponse<object>.Failure(
+                statusCode: statusCode,
+                message: result.Error.Message ?? "An error occurred",
+                errors: [result.Error.Code]
+            );
+
+            return StatusCode(statusCode, response);
         }
     }
 }
+

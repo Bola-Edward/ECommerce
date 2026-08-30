@@ -7,26 +7,51 @@
         public string? Message { get; set; }
         public T? Data { get; set; }
         public List<string>? Errors { get; set; }
+        public PaginationMeta? Pagination { get; set; }
 
-        private ApiResponse(bool isSuccess, int statusCode, T? data, string? message, List<string>? errors)
+        private ApiResponse(
+            bool isSuccess,
+            int statusCode,
+            T? data,
+            string? message,
+            List<string>? errors,
+            PaginationMeta? pagination)
         {
             IsSuccess = isSuccess;
             StatusCode = statusCode;
             Data = data;
             Message = message;
             Errors = errors;
+            Pagination = pagination;
         }
 
-        public static ApiResponse<T> Success(T data, int statusCode = 200, string? message = null)
+        public static ApiResponse<T> Success(
+            T data,
+            int statusCode = 200,
+            string? message = null,
+            PaginationMeta? pagination = null)
         {
-            return new ApiResponse<T>(true, statusCode, data, message, null);
+            return new ApiResponse<T>(
+                true,
+                statusCode,
+                data,
+                message,
+                null,
+                pagination);
         }
 
-
-        public static ApiResponse<T> Failure(int statusCode, string message, List<string>? errors = null)
+        public static ApiResponse<T> Failure(
+            int statusCode,
+            string message,
+            List<string>? errors = null)
         {
-            return new ApiResponse<T>(false, statusCode, default, message, errors);
+            return new ApiResponse<T>(
+                false,
+                statusCode,
+                default,
+                message,
+                errors,
+                null);
         }
-
     }
 }

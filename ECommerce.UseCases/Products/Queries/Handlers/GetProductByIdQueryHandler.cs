@@ -24,7 +24,7 @@ namespace ECommerce.UseCases.Products.Queries.Handlers
             if (product is null)
                 return Result<GetProductByIdResponse>.Failure(ProductErrors.NotFound);
 
-            return product;
+            return Result<GetProductByIdResponse>.Success(product);
         }
     }
 }
