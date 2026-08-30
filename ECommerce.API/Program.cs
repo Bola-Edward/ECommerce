@@ -4,47 +4,63 @@ using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Seeding;
 using ECommerce.UseCases;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddPresentation();
-builder.Services.AddApplication();
 
-// Add services to the container.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger(); // run middleware to generate open api file
-    app.UseSwaggerUI(); // use swagger ui to view open api file
+    builder.Host.UseSerilog((context, services, configuration) =>
+        configuration
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext());
+
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddPresentation();
+    builder.Services.AddApplication();
+
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseSerilogRequestLogging();
+
+    app.UseExceptionHandler();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+
+        var dbSeed = scope.ServiceProvider
+            .GetRequiredService<DatabaseSeeder>();
+
+        var dbContext = scope.ServiceProvider
+            .GetRequiredService<ECommerceDbContext>();
+
+        await dbContext.Database.MigrateAsync();
+        await dbSeed.SeedAll();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.MapControllers();
+
+    await app.RunAsync();
 }
-
-
-if (app.Environment.IsDevelopment())
+catch (Exception ex)
 {
-
-    var scope = app.Services.CreateAsyncScope();
-
-    var dbSeed = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ECommerceDbContext>();
-
-    await dbContext.Database.MigrateAsync();
-    await dbSeed.SeedAll();
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
-
-app.UseExceptionHandler();
-
-// Configure the HTTP request pipeline.
-
-app.UseHttpsRedirection();
-
-app.MapControllers();
-
-app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+finally
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    await Log.CloseAndFlushAsync();
 }
-
