@@ -48,6 +48,14 @@ namespace ECommerce.API.Controllers
             return Ok(response);
         }
 
+        protected ActionResult<ApiResponse<T>> HandleCreatedResult<T>(Result<T> result, string actionName, object routeValues)
+        {
+            if (result.IsFailure)
+                return Problem(result);
+
+            return CreatedAtAction(actionName, routeValues, ApiResponse<T>.Success(result.Value));
+        }
+
 
         protected ActionResult Problem(Result result)
         {

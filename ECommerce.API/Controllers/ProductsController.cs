@@ -2,6 +2,7 @@
 using ECommerce.API.Models;
 using ECommerce.Domain.IRepositories;
 using ECommerce.UseCases.Messaging.Apstractions;
+using ECommerce.UseCases.Products.Commands.CreateProduct;
 using ECommerce.UseCases.Products.Dtos;
 using ECommerce.UseCases.Products.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,8 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpGet] // api /products
+        [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllProductsResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllProductsResponse>>>> GetAll(
         CancellationToken ct = default)
         {
@@ -30,6 +33,7 @@ namespace ECommerce.API.Controllers
 
         [HttpGet("paged")] // api/products/paged
         [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<GetAllProductsResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<IReadOnlyList<GetAllProductsResponse>>>> Paged([FromQuery] GetPagedProductsQuery query, CancellationToken ct = default)
         {
             var result = await _sender.Send(query, ct);
@@ -41,11 +45,26 @@ namespace ECommerce.API.Controllers
 
         [HttpGet("{id:guid}")] // api /products/{id}
         [ProducesResponseType(typeof(ApiResponse<GetProductByIdResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<GetProductByIdResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponse<GetProductByIdResponse>>> GetById(Guid id, CancellationToken ct = default)
         {
             var result = await _sender.Send(new GetProductByIdQuery(id), ct);
             return HandleResult(result);
         }
+
+
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(typeof(ApiResponse<Guid>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ApiResponse<Guid>>> Create(
+            [FromForm] CreateProductCommand command,
+            CancellationToken ct = default)
+        {
+            var result = await _sender.Send(command, ct);
+            return HandleCreatedResult(result, nameof(GetById), new { id = result.Value });
+        }
+
     }
 }

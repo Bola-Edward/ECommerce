@@ -28,6 +28,7 @@ namespace ECommerce.Domain.Entities
         private ProductEntity() { }
 
         public static Result<ProductEntity> Create(
+        Guid id,
         string name,
         string description,
         string pictureUrl,
