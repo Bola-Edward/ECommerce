@@ -1,4 +1,7 @@
-﻿using ECommerce.Domain.Repositories;
+﻿using ECommerce.Domain;
+using ECommerce.Domain.IRepositories;
+using ECommerce.Domain.Repositories;
+using ECommerce.Infrastructure.Caching;
 using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Data.Interceptors;
 using ECommerce.Infrastructure.Repositories;
@@ -12,6 +15,7 @@ using ECommerce.UseCases.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace ECommerce.Infrastructure
 {
@@ -37,12 +41,44 @@ namespace ECommerce.Infrastructure
                 options.ApiSecret = configuration["CloudinarySettings:ApiSecret"]!;
             });
 
+            services.AddScoped(typeof(IReadRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<DatabaseSeeder>();
 
+            AddBasketCaching(services, configuration);
+
             return services;
+        }
+
+
+        private static void AddBasketCaching(IServiceCollection services, IConfiguration config)
+        {
+            services
+                .AddOptions<CacheEntryPolicy>("Basket")
+                .Bind(config.GetSection("CachedAggregates:Basket"))
+                .ValidateOnStart();
+
+            services.AddSingleton<IValidateOptions<CacheEntryPolicy>, CacheEntryPolicyValidator>();
+
+            var redisConnection = config.GetConnectionString("Redis");
+
+            if (!string.IsNullOrWhiteSpace(redisConnection))
+            {
+                services.AddStackExchangeRedisCache(options =>
+                    options.Configuration = redisConnection);
+            }
+
+
+            services.AddHybridCache();
+
+            services.AddScoped(typeof(ICachedAggregateStore<>), typeof(HybridCacheAggregateStore<>));
+            services.AddScoped<IBasketStore, HybridBasketStore>();
         }
     }
 }

@@ -14,12 +14,12 @@ namespace ECommerce.API.Controllers
     public class ApiControllerBase : ControllerBase
     {
         protected ActionResult<ApiResponse<T>> HandleResult<T>(
-            Result<T> result)
+            Result<T> result,
+            string? message = null)
         {
             if (result.IsSuccess)
             {
-                return Ok(
-                    ApiResponse<T>.Success(result.Value));
+                return Ok(ApiResponse<T>.Success(result.Value, message: message));
             }
 
             return Problem(result);
@@ -48,12 +48,12 @@ namespace ECommerce.API.Controllers
             return Ok(response);
         }
 
-        protected ActionResult<ApiResponse<T>> HandleCreatedResult<T>(Result<T> result, string actionName, object routeValues)
+        protected ActionResult<ApiResponse<T>> HandleCreatedResult<T>(Result<T> result, string actionName, object routeValues, string? message = null)
         {
             if (result.IsFailure)
                 return Problem(result);
 
-            return CreatedAtAction(actionName, routeValues, ApiResponse<T>.Success(result.Value));
+            return CreatedAtAction(actionName, routeValues, ApiResponse<T>.Success(result.Value, message: message));
         }
 
 

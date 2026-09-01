@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Infrastructure.Repositories
 {
-    public sealed class Repository<T> : IRepository<T> where T : BaseEntity
+    public sealed class Repository<T> : IRepository<T>, IReadRepository<T> where T : BaseEntity
     {
         private readonly ECommerceDbContext _dbContext;
         private readonly DbSet<T> _dbSet;
