@@ -45,8 +45,8 @@ namespace ECommerce.Infrastructure
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddScoped<IAttachmentService, AttachmentService>();
 
-            services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<DatabaseSeeder>();

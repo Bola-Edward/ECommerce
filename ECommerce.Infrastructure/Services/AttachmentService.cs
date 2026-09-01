@@ -1,36 +1,41 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using ECommerce.Domain.Common;
+using ECommerce.Domain.Errors;
 using ECommerce.UseCases.Common.Interfaces;
 using ECommerce.UseCases.Common.Settings;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ECommerce.Infrastructure.Services
 {
-    public class PhotoService : IPhotoService
+    public class AttachmentService : IAttachmentService
     {
         private readonly Cloudinary _cloudinary;
+        private readonly ILogger<AttachmentService> _logger;
 
-        public PhotoService(IOptions<CloudinarySettings> config)
+        public AttachmentService(
+            IOptions<CloudinarySettings> config,
+            ILogger<AttachmentService> logger)
         {
+            _logger = logger;
             var account = new Account(
                 config.Value.CloudName,
                 config.Value.ApiKey,
                 config.Value.ApiSecret);
-
             _cloudinary = new Cloudinary(account);
         }
 
-        public async Task<string> UploadPhotoAsync(IFormFile file)
+        public async Task<Result<string>> UploadAttachmentAsync(IFormFile file)
         {
             if (file.Length <= 0)
-                throw new ArgumentException("File is empty");
+            {
+                _logger.LogWarning("Upload failed: file is empty");
+                return Result<string>.Failure(AttachmentErrors.EmptyFile);
+            }
 
             await using var stream = file.OpenReadStream();
-
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
@@ -42,11 +47,14 @@ namespace ECommerce.Infrastructure.Services
             };
 
             var result = await _cloudinary.UploadAsync(uploadParams);
-
             if (result.Error is not null)
-                throw new Exception(result.Error.Message);
+            {
+                _logger.LogError("Cloudinary upload failed: {Error}", result.Error.Message);
+                return Result<string>.Failure(AttachmentErrors.UploadFailed);
+            }
 
-            return result.SecureUrl.ToString();
+            _logger.LogInformation("Image uploaded successfully: {Url}", result.SecureUrl);
+            return Result<string>.Success(result.SecureUrl.ToString());
         }
     }
 }
