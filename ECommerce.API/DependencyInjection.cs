@@ -1,4 +1,5 @@
-﻿using ECommerce.API.Middlewares;
+﻿using ECommerce.API.Filters;
+using ECommerce.API.Middlewares;
 
 namespace ECommerce.API
 {
@@ -6,7 +7,7 @@ namespace ECommerce.API
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options => options.Filters.Add<AuditActionFilter>());
 
             services.AddProblemDetails();
             services.AddExceptionHandler<GlobalExceptionHandler>();
