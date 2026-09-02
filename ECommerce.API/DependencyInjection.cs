@@ -1,11 +1,15 @@
 ﻿using ECommerce.API.Filters;
 using ECommerce.API.Middlewares;
+using ECommerce.Infrastructure.Identity;
+using ECommerce.UseCases.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.API
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddPresentation(this IServiceCollection services)
+        public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers(options => options.Filters.Add<AuditActionFilter>());
 
@@ -14,6 +18,39 @@ namespace ECommerce.API
 
             services.AddSwaggerGen(); // generate open api file
 
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
+                .AddEntityFrameworkStores<ECommerceIdentityDbContext>()
+                .AddDefaultTokenProviders();
+
+
+            var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            services.AddAuthorization(); // enable to read from [Authorize] attribute
 
             return services;
         }

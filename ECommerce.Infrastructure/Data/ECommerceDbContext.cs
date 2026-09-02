@@ -13,12 +13,14 @@ namespace ECommerce.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ECommerceDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ECommerceDbContext).Assembly,
+                type => type.Namespace == "ECommerce.Infrastructure.Data.Configurations");
         }
 
 
         public DbSet<ProductEntity> Products => Set<ProductEntity>();
         public DbSet<ProductBrandEntity> ProductBrands => Set<ProductBrandEntity>();
         public DbSet<ProductTypeEntity> ProductTypes => Set<ProductTypeEntity>();
+        public DbSet<UserAddressEntity> UserAddresses => Set<UserAddressEntity>();
     }
 }

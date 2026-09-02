@@ -4,6 +4,7 @@ using ECommerce.Domain.Repositories;
 using ECommerce.Infrastructure.Caching;
 using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Data.Interceptors;
+using ECommerce.Infrastructure.Identity;
 using ECommerce.Infrastructure.Repositories;
 using ECommerce.Infrastructure.Seeding;
 using ECommerce.Infrastructure.Services;
@@ -11,6 +12,7 @@ using ECommerce.UseCases.Brands;
 using ECommerce.UseCases.Common.Interfaces;
 using ECommerce.UseCases.Common.Settings;
 using ECommerce.UseCases.Products;
+using ECommerce.UseCases.Settings;
 using ECommerce.UseCases.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,12 +27,18 @@ namespace ECommerce.Infrastructure
         {
             // Register infrastructure services here
             services.AddDbContext<ECommerceDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sql => sql.MigrationsHistoryTable("__ApplicationMigrationsHistory"))
+                .EnableSensitiveDataLogging()
+            );
+
+            services.AddDbContext<ECommerceIdentityDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), sql => sql.MigrationsHistoryTable("__IdentityMigrationsHistory"))
                 .EnableSensitiveDataLogging()
             );
 
             services.AddScoped<IDataSeeder, ProductBrandSeeder>();
             services.AddScoped<IDataSeeder, ProductTypeSeeder>();
+            services.AddScoped<IDataSeeder, IdentitySeeder>();
             services.AddScoped<IAuditInterceptor, AuditInterceptor>();
             services.AddScoped<ISoftDeleteInterceptor, SoftDeleteInterceptor>();
 
@@ -50,6 +58,11 @@ namespace ECommerce.Infrastructure
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<DatabaseSeeder>();
+
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+
 
             AddBasketCaching(services, configuration);
 

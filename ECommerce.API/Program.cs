@@ -21,7 +21,7 @@ try
             .Enrich.FromLogContext());
 
     builder.Services.AddInfrastructure(builder.Configuration);
-    builder.Services.AddPresentation();
+    builder.Services.AddPresentation(builder.Configuration);
     builder.Services.AddApplication();
 
     var app = builder.Build();
@@ -49,6 +49,9 @@ try
         await dbContext.Database.MigrateAsync();
         await dbSeed.SeedAll();
     }
+
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.UseHttpsRedirection();
 
