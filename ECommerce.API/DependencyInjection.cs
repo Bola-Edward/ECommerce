@@ -1,9 +1,11 @@
 ﻿using ECommerce.API.Filters;
 using ECommerce.API.Middlewares;
 using ECommerce.Infrastructure.Identity;
-using ECommerce.UseCases.Settings;
+using ECommerce.UseCases.Common.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 namespace ECommerce.API
 {
@@ -11,12 +13,33 @@ namespace ECommerce.API
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddHttpContextAccessor();
+
             services.AddControllers(options => options.Filters.Add<AuditActionFilter>());
 
             services.AddProblemDetails();
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
-            services.AddSwaggerGen(); // generate open api file
+            services.AddSwaggerGen(options =>
+            {
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "JWT Bearer. Example: Bearer {token}",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                options.AddSecurityRequirement(document =>
+                    new OpenApiSecurityRequirement
+                    {
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] =
+                            new List<string>()
+                    });
+            });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {

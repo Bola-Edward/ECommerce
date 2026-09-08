@@ -12,7 +12,6 @@ using ECommerce.UseCases.Brands;
 using ECommerce.UseCases.Common.Interfaces;
 using ECommerce.UseCases.Common.Settings;
 using ECommerce.UseCases.Products;
-using ECommerce.UseCases.Settings;
 using ECommerce.UseCases.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -55,11 +54,21 @@ namespace ECommerce.Infrastructure
 
             services.AddScoped<IAttachmentService, AttachmentService>();
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IEmailVerificationCodeStore, HybridEmailVerificationCodeStore>();
+            services.AddScoped<IEmailSender, NoOpEmailSender>();
+
+            services.Configure<EmailVerificationSettings>(
+                configuration.GetSection(EmailVerificationSettings.SectionName));
+
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
             services.AddScoped<DatabaseSeeder>();
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 

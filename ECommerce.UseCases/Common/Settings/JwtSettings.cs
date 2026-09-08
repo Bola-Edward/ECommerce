@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECommerce.UseCases.Settings
+namespace ECommerce.UseCases.Common.Settings
 {
     public sealed class JwtSettings
     {

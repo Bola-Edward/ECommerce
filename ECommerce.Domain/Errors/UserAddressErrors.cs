@@ -22,6 +22,10 @@ namespace ECommerce.Domain.Errors
                 "UserAddress.InvalidUserId",
                 "User id is required.");
 
+        public static readonly Error InvalidLabel =
+            Error.Validation(
+                "UserAddress.InvalidLabel",
+                "Address label is required.");
 
         public static readonly Error InvalidName =
             Error.Validation(

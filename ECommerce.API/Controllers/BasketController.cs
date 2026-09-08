@@ -23,7 +23,7 @@ namespace ECommerce.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<GetBasketResponse>>> Get(CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 
@@ -39,7 +39,7 @@ namespace ECommerce.API.Controllers
             [FromBody] AddBasketItemRequest request,
             CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 
@@ -59,7 +59,7 @@ namespace ECommerce.API.Controllers
             [FromBody] UpdateBasketItemQuantityRequest request,
             CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 
@@ -78,7 +78,7 @@ namespace ECommerce.API.Controllers
             Guid productId,
             CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 
@@ -94,7 +94,7 @@ namespace ECommerce.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponse<GetBasketResponse>>> Clear(CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 
@@ -110,7 +110,7 @@ namespace ECommerce.API.Controllers
             [FromBody] MergeBasketRequest request,
             CancellationToken ct = default)
         {
-            var buyerIdResult = this.GetBuyerId();
+            var buyerIdResult = HttpContext.GetBuyerId();
             if (buyerIdResult.IsFailure)
                 return Problem(buyerIdResult);
 

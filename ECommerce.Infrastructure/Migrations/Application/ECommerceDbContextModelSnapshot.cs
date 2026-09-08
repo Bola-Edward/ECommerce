@@ -150,13 +150,21 @@ namespace ECommerce.Infrastructure.Migrations.Application
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsDefault")
+                    b.Property<bool>("IsDefaultBilling")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefaultShipping")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()

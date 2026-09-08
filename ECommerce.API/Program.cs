@@ -5,6 +5,7 @@ using ECommerce.Infrastructure.Seeding;
 using ECommerce.UseCases;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ try
 
     var app = builder.Build();
 
+
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -35,6 +38,8 @@ try
     app.UseSerilogRequestLogging();
 
     app.UseExceptionHandler();
+
+
 
     if (app.Environment.IsDevelopment())
     {

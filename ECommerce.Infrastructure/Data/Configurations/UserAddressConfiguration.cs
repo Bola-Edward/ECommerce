@@ -18,6 +18,9 @@ namespace ECommerce.Infrastructure.Data.Configurations
 
             builder.HasQueryFilter(entity => !entity.IsDeleted);
 
+            builder.Property(x => x.Label)
+                .HasMaxLength(UserAddressEntity.MaxNameLength)
+                .IsRequired();
 
             builder.Property(x => x.RecipientFirstName)
                 .HasMaxLength(UserAddressEntity.MaxNameLength)

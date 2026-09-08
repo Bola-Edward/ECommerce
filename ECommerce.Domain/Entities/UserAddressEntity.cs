@@ -17,6 +17,7 @@ namespace ECommerce.Domain.Entities
         }
 
         public Guid UserId { get; private set; }
+        public string Label { get; private set; } = null!;
         public string RecipientFirstName { get; private set; } = null!;
         public string RecipientLastName { get; private set; } = null!;
         public string PhoneNumber { get; private set; } = null!;
@@ -24,11 +25,13 @@ namespace ECommerce.Domain.Entities
         public string City { get; private set; } = null!;
         public string Street { get; private set; } = null!;
         public string PostalCode { get; private set; } = null!;
-        public bool IsDefault { get; private set; }
+        public bool IsDefaultShipping { get; private set; }
+        public bool IsDefaultBilling { get; private set; }
 
         public static Result<UserAddressEntity> Create(
             Guid id,
             Guid userId,
+            string label,
             string recipientFirstName,
             string recipientLastName,
             string phoneNumber,
@@ -36,7 +39,8 @@ namespace ECommerce.Domain.Entities
             string city,
             string street,
             string postalCode,
-            bool isDefault = false)
+            bool isDefaultShipping = false,
+            bool isDefaultBilling = false)
         {
             if (id == Guid.Empty)
                 return Result<UserAddressEntity>.Failure(UserAddressErrors.InvalidId);
@@ -44,6 +48,10 @@ namespace ECommerce.Domain.Entities
             if (userId == Guid.Empty)
                 return Result<UserAddressEntity>.Failure(UserAddressErrors.InvalidUserId);
 
+            if (string.IsNullOrWhiteSpace(label))
+                return Result<UserAddressEntity>.Failure(UserAddressErrors.InvalidLabel);
+            if (recipientFirstName == null)
+                return Result<UserAddressEntity>.Failure(UserAddressErrors.InvalidName);
             if (string.IsNullOrWhiteSpace(recipientFirstName) ||
                 string.IsNullOrWhiteSpace(recipientLastName))
             {
@@ -74,7 +82,8 @@ namespace ECommerce.Domain.Entities
                 City = city.Trim(),
                 Street = street.Trim(),
                 PostalCode = postalCode.Trim(),
-                IsDefault = isDefault,
+                IsDefaultShipping = isDefaultShipping,
+                IsDefaultBilling = isDefaultBilling,
                 CreatedAt = DateTimeOffset.UtcNow
             });
         }

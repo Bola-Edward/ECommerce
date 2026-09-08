@@ -25,6 +25,18 @@ namespace ECommerce.API.Controllers
             return Problem(result);
         }
 
+        protected ActionResult<ApiResponse<object>> HandleResult(
+            Result result,
+            string? message = null)
+        {
+            if (result.IsSuccess)
+            {
+                return Ok(ApiResponse<object>.Success(null!, message: message));
+            }
+
+            return Problem(result);
+        }
+
 
         protected ActionResult<ApiResponse<IReadOnlyList<T>>> FromPagedResult<T>(
             Result<PagedResult<T>> result,
