@@ -75,6 +75,7 @@ namespace ECommerce.Domain.Entities
             {
                 Id = id,
                 UserId = userId,
+                Label = label.Trim(),
                 RecipientFirstName = recipientFirstName.Trim(),
                 RecipientLastName = recipientLastName.Trim(),
                 PhoneNumber = phoneNumber.Trim(),

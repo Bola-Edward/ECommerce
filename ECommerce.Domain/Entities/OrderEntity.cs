@@ -44,6 +44,10 @@ namespace ECommerce.Domain.Entities
         public decimal ShippingCost { get; private set; }
         public decimal Total { get; private set; }
 
+
+        public string? PaymentIntentId { get; private set; }
+        public DateTimeOffset? PaidAtUtc { get; private set; }
+
         public IReadOnlyCollection<OrderItemEntity> Items => _items;
 
         public static Result<OrderEntity> Create(
@@ -132,6 +136,42 @@ namespace ECommerce.Domain.Entities
 
             Status = OrderStatus.Cancelled;
 
+            return Result.Success();
+        }
+
+
+        public Result AttachPaymentIntent(string paymentIntentId)
+        {
+            if (Status != OrderStatus.Pending)
+                return Result.Failure(OrderErrors.InvalidPaymentState);
+
+            if (string.IsNullOrWhiteSpace(paymentIntentId))
+                return Result.Failure(OrderErrors.InvalidPaymentIntent);
+
+            PaymentIntentId = paymentIntentId.Trim();
+            return Result.Success();
+        }
+
+        public Result MarkAsPaid(string paymentIntentId)
+        {
+            if (Status == OrderStatus.Cancelled)
+                return Result.Failure(OrderErrors.CannotPayCancelled);
+
+            if (Status is not OrderStatus.Pending and not OrderStatus.Processing)
+            {
+                if (PaymentIntentId == paymentIntentId)
+                    return Result.Success();
+
+                return Result.Failure(OrderErrors.InvalidPaymentState);
+            }
+
+            if (!string.IsNullOrWhiteSpace(PaymentIntentId)
+                && PaymentIntentId != paymentIntentId)
+                return Result.Failure(OrderErrors.PaymentIntentMismatch);
+
+            PaymentIntentId = paymentIntentId;
+            PaidAtUtc = DateTimeOffset.UtcNow;
+            Status = OrderStatus.Processing;
             return Result.Success();
         }
     }

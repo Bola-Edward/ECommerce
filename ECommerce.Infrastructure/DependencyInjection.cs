@@ -5,6 +5,7 @@ using ECommerce.Infrastructure.Caching;
 using ECommerce.Infrastructure.Data;
 using ECommerce.Infrastructure.Data.Interceptors;
 using ECommerce.Infrastructure.Identity;
+using ECommerce.Infrastructure.Payments;
 using ECommerce.Infrastructure.Repositories;
 using ECommerce.Infrastructure.Seeding;
 using ECommerce.Infrastructure.Services;
@@ -73,6 +74,8 @@ namespace ECommerce.Infrastructure
 
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
+            services.Configure<StripeSettings>(configuration.GetSection(StripeSettings.SectionName));
+            services.AddScoped<IPaymentService, StripePaymentService>();
 
             AddBasketCaching(services, configuration);
 

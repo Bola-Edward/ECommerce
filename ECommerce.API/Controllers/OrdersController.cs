@@ -3,6 +3,7 @@ using ECommerce.Domain.Common;
 using ECommerce.UseCases.Messaging.Apstractions;
 using ECommerce.UseCases.Orders.Commands.CancelOrder;
 using ECommerce.UseCases.Orders.Commands.CreateOrder;
+using ECommerce.UseCases.Orders.Commands.CreateOrderPayment;
 using ECommerce.UseCases.Orders.Dtos;
 using ECommerce.UseCases.Orders.Queries.GetMyOrders;
 using ECommerce.UseCases.Orders.Queries.GetOrderById;
@@ -68,6 +69,19 @@ namespace ECommerce.API.Controllers
         {
             var result = await _sender.Send(new CancelOrderCommand(id), ct);
             return HandleResult(result, ApiMessages.OrderCancelled);
+        }
+
+        [HttpPost("{id:guid}/pay")]
+        [EndpointSummary("Create Stripe PaymentIntent for order")]
+        [EndpointDescription("Creates a Stripe PaymentIntent for a pending order and returns clientSecret for Stripe.js.")]
+        [ProducesResponseType(typeof(ApiResponse<PaymentClientSecretResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<ApiResponse<PaymentClientSecretResponse>>> PayOrder(Guid id, CancellationToken ct)
+        {
+            var result = await _sender.Send(new CreateOrderPaymentCommand(id), ct);
+            return HandleResult(result, ApiMessages.PaymentIntentCreated);
         }
     }
 }

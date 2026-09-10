@@ -37,6 +37,8 @@ namespace ECommerce.UseCases.Orders.Dtos
         decimal SubTotal,
         decimal ShippingCost,
         decimal Total,
+        string? PaymentIntentId,
+        DateTimeOffset? PaidAtUtc,
         DateTimeOffset CreatedAt,
         IReadOnlyList<OrderItemResponse> Items);
 }

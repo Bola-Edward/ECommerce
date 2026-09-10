@@ -23,6 +23,7 @@
         public const string OrdersRetrieved = "Orders retrieved successfully.";
         public const string OrderRetrieved = "Order retrieved successfully.";
         public const string OrderCancelled = "Order cancelled successfully.";
+        public const string PaymentIntentCreated = "Payment intent created successfully.";
 
         public const string DeliveryMethodsRetrieved = "Delivery methods retrieved successfully.";
         public const string DeliveryMethodRetrieved = "Delivery method retrieved successfully.";

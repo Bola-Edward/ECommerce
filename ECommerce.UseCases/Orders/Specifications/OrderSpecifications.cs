@@ -43,4 +43,17 @@ namespace ECommerce.UseCases.Orders.Specifications
             Query.Where(o => o.UserId == userId).AsNoTracking();
         }
     }
+
+    public sealed class OrderByPaymentIntentSpecification : Specification<OrderEntity>
+    {
+        public OrderByPaymentIntentSpecification(string paymentIntentId, bool tracking = false)
+        {
+            var query = Query.Where(o => o.PaymentIntentId == paymentIntentId);
+
+            if (tracking)
+                query.AsTracking();
+            else
+                query.AsNoTracking();
+        }
+    }
 }
