@@ -11,7 +11,7 @@ namespace ECommerce.Domain
         IRepository<ProductEntity> Products { get; }
         IRepository<ProductBrandEntity> Brands { get; }
         IRepository<ProductTypeEntity> Types { get; }
-
+        IRepository<OrderEntity> Orders { get; }
         Task<int> SaveChangesAsync(CancellationToken ct = default);
 
     }

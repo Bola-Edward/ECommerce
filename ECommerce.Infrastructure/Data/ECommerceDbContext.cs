@@ -22,5 +22,10 @@ namespace ECommerce.Infrastructure.Data
         public DbSet<ProductBrandEntity> ProductBrands => Set<ProductBrandEntity>();
         public DbSet<ProductTypeEntity> ProductTypes => Set<ProductTypeEntity>();
         public DbSet<UserAddressEntity> UserAddresses => Set<UserAddressEntity>();
+        public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
+        public DbSet<DeliveryMethodEntity> DeliveryMethods => Set<DeliveryMethodEntity>();
+        public DbSet<OrderEntity> Orders => Set<OrderEntity>();
+
+
     }
 }

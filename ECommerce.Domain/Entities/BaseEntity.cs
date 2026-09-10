@@ -9,7 +9,7 @@ namespace ECommerce.Domain.Entities
         public DateTimeOffset? UpdatedAt { get; protected set; }
         public bool IsDeleted { get; private set; }
 
-        // todo : Add CreatedBy and UpdatedBy properties for auditing purposes
+
 
         public void MarkAsDeleted()
         {

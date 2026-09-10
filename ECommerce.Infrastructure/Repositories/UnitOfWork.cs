@@ -17,8 +17,9 @@ namespace ECommerce.Infrastructure.Repositories
         public IRepository<ProductEntity> Products { get; }
         public IRepository<ProductBrandEntity> Brands { get; }
         public IRepository<ProductTypeEntity> Types { get; }
+        public IRepository<OrderEntity> Orders { get; }
 
-        public UnitOfWork(ECommerceDbContext dbContext, IAuditInterceptor auditInterceptor, ISoftDeleteInterceptor softDeleteInterceptor, IRepository<ProductEntity> products, IRepository<ProductBrandEntity> brands, IRepository<ProductTypeEntity> types)
+        public UnitOfWork(ECommerceDbContext dbContext, IAuditInterceptor auditInterceptor, ISoftDeleteInterceptor softDeleteInterceptor, IRepository<ProductEntity> products, IRepository<ProductBrandEntity> brands, IRepository<ProductTypeEntity> types, IRepository<OrderEntity> orders)
         {
             _dbContext = dbContext;
             _auditInterceptor = auditInterceptor;
@@ -27,6 +28,7 @@ namespace ECommerce.Infrastructure.Repositories
             Products = products;
             Brands = brands;
             Types = types;
+            Orders = orders;
         }
 
 

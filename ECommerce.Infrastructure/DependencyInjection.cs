@@ -37,6 +37,7 @@ namespace ECommerce.Infrastructure
 
             services.AddScoped<IDataSeeder, ProductBrandSeeder>();
             services.AddScoped<IDataSeeder, ProductTypeSeeder>();
+            services.AddScoped<IDataSeeder, DeliveryMethodSeeder>();
             services.AddScoped<IDataSeeder, IdentitySeeder>();
             services.AddScoped<IAuditInterceptor, AuditInterceptor>();
             services.AddScoped<ISoftDeleteInterceptor, SoftDeleteInterceptor>();
