@@ -78,15 +78,17 @@ After login, merge the guest basket with `POST /api/basket/merge`.
 
 ## Main API Routes
 
-| Area | Available Operations |
-|------|----------------------|
-| **Authentication** | Register, email confirmation, login, refresh tokens, logout |
-| **Users** | View and update profile, manage addresses |
-| **Catalog** | Products, brands, and product types |
-| **Basket** | View, add, update, remove, clear, and merge basket |
-| **Orders** | Checkout, order history, order details, cancellation |
-| **Delivery** | List, create, update, and delete delivery methods |
-| **Payments** | Stripe PaymentIntent creation and webhook handling |
+| Area | Endpoints |
+|------|-----------|
+| **Auth** | `/api/Auth/*` |
+| **Users** | `/api/Users/me`, `/api/Users/me/addresses` |
+| **Products** | `/api/Products/*` |
+| **Brands** | `/api/Brands` |
+| **Types** | `/api/Types` |
+| **Basket** | `/api/Basket/*` |
+| **Orders** | `/api/Orders/*` |
+| **Delivery Methods** | `/api/DeliveryMethods/*` |
+| **Payments** | `/api/Payments/webhook` |
 
 ## Architecture notes
 
