@@ -76,14 +76,17 @@ Authorization: Bearer {accessToken}
 
 After login, merge the guest basket with `POST /api/basket/merge`.
 
-## Main API routes
+## Main API Routes
 
-| Area | Examples |
-|------|----------|
-| Auth | `/api/auth/register`, `confirm-email`, `login`, `refresh`, `logout` |
-| Users | `/api/users/me`, `/api/users/me/addresses` |
-| Catalog | products, brands, types |
-| Basket | `/api/basket`, items, merge |
+| Area | Available Operations |
+|------|----------------------|
+| **Authentication** | Register, email confirmation, login, refresh tokens, logout |
+| **Users** | View and update profile, manage addresses |
+| **Catalog** | Products, brands, and product types |
+| **Basket** | View, add, update, remove, clear, and merge basket |
+| **Orders** | Checkout, order history, order details, cancellation |
+| **Delivery** | List, create, update, and delete delivery methods |
+| **Payments** | Stripe PaymentIntent creation and webhook handling |
 
 ## Architecture notes
 
