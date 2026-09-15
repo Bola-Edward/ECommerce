@@ -1,6 +1,6 @@
 # ECommerce
 
-ASP.NET Core e-commerce API with JWT authentication, email verification (teaching NoOp), refresh tokens, catalog, basket, and user addresses.
+ASP.NET Core e-commerce API with JWT authentication, email verification (teaching NoOp), refresh tokens, product catalog, basket management, orders, payments, and user addresses.
 
 Built with a clean layered architecture and **two EF Core DbContexts** sharing one SQL Server database (Identity vs business data).
 
@@ -8,12 +8,25 @@ Built with a clean layered architecture and **two EF Core DbContexts** sharing o
 
 | Project | Role |
 |---------|------|
-| `ECommerce.API` | Swagger, DI composition |
-| `ECommerce.UseCases` | Commands / queries, ports, settings |
-| `ECommerce.Domain` | Entities, errors, `Result` pattern |
-| `ECommerce.Infrastructure` | EF Core, Identity, JWT, cache, seeding |
-| `tests/` | UseCases + architecture tests |
+| `ECommerce.API` | Web API, Swagger, authentication, DI composition |
+| `ECommerce.UseCases` | Commands, queries, handlers, validation, and application logic |
+| `ECommerce.Domain` | Entities, business rules, errors, and Result pattern |
+| `ECommerce.Infrastructure` | EF Core, Identity, JWT, caching, external services, and seeding |
+| `ECommerce.ArchitectureTests` | Clean Architecture dependency tests |
 
+## ✨ Key Features
+
+- Clean Architecture with CQRS and Vertical Slice organization
+- Product catalog with filtering, sorting, pagination, and specifications
+- Basket management with HybridCache and optional Redis
+- Order and delivery management
+- Stripe payments and webhook handling
+- JWT authentication with refresh tokens
+- Email verification
+- Cloudinary product image storage
+- Result Pattern for expected operation failures
+- Audit tracking and soft delete
+- Architecture tests with NetArchTest
 
 ## Prerequisites
 
@@ -74,11 +87,18 @@ After login, merge the guest basket with `POST /api/basket/merge`.
 
 ## Architecture notes
 
-- **Option B:** one SQL database, two contexts  
-  - `ECommerceIdentityDbContext` → Identity tables + refresh tokens (`identity.__IdentityMigrationsHistory`)  
-  - `ECommerceDbContext` → products, brands, types, addresses (`app.__ApplicationMigrationsHistory`)
+## Architecture notes
+
+- **Clean Architecture** with dependencies flowing toward the Domain layer.
+- **CQRS** with feature-based / vertical slice organization.
+- **Result Pattern** for expected business failures.
+- **Specification Pattern** for reusable filtering, sorting, pagination, and projection.
+- **Generic Repository + Unit of Work** abstractions defined in the Domain layer and implemented in Infrastructure.
+- Two EF Core DbContexts sharing one SQL Server database:
+  - `ECommerceIdentityDbContext` → Identity data and refresh tokens
+  - `ECommerceDbContext` → application/business data
 - UseCases return `Result` / `Result<T>` (no exception-driven flow for expected failures).
-- JWT access tokens are short-lived; refresh tokens are opaque, hashed in the DB, and rotated on use.
+- - JWT access tokens are short-lived; refresh tokens are opaque, hashed in the DB, and rotated on use.
 
 ## Configuration
 
@@ -90,6 +110,7 @@ Important sections in `appsettings` / `appsettings.Development.json`:
 - `Seed:SuperAdmin`
 - `CachedAggregates:Basket`
 - `CloudinarySettings` — product image uploads (use your own keys)
+- - `StripeSettings` — Stripe API and webhook configuration
 
 ## Migrations
 
@@ -102,12 +123,3 @@ dotnet ef migrations add <Name> --context ApplicationDbContext --output-dir Migr
 ```
 
 
-## Tests
-
-```bash
-dotnet test
-```
-
-## License
-
-Private / course material unless otherwise stated.
