@@ -107,13 +107,16 @@ After login, merge the guest basket with `POST /api/basket/merge`.
 
 Important sections in `appsettings` / `appsettings.Development.json`:
 
-- `ConnectionStrings:DefaultConnection`
-- `Jwt` — `Secret` (≥ 32 chars), issuer, audience, access/refresh lifetimes
-- `EmailVerification` — code length, expiry, max attempts
-- `Seed:SuperAdmin`
-- `CachedAggregates:Basket`
-- `CloudinarySettings` — product image uploads (use your own keys)
-- `StripeSettings` — Stripe API and webhook configuration
+- `ConnectionStrings:DefaultConnection` — SQL Server connection string
+- `ConnectionStrings:Redis` — optional Redis connection for distributed caching
+- `Jwt` — secret, issuer, audience, and access/refresh token lifetimes
+- `EmailVerification` — verification code length, expiration, and max failed attempts
+- `Seed:SuperAdmin` — initial super-admin credentials
+- `CashedAggregates:Basket` — basket cache expiration settings
+- `CloudinarySettings` — Cloudinary configuration for product image uploads
+- `Stripe` — Stripe API keys, webhook secret, and currency
+- `Serilog` — console/file logging configuration
+- `Email` — email sender configuration
 
 ## Migrations
 
