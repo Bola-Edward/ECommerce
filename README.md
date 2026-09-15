@@ -113,7 +113,7 @@ Important sections in `appsettings` / `appsettings.Development.json`:
 - `Seed:SuperAdmin`
 - `CachedAggregates:Basket`
 - `CloudinarySettings` — product image uploads (use your own keys)
-- - `StripeSettings` — Stripe API and webhook configuration
+- `StripeSettings` — Stripe API and webhook configuration
 
 ## Migrations
 
